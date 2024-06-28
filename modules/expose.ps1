@@ -31,7 +31,7 @@ function Start-Forwarding {
             if ($ticks++ -gt 20) {
                 $err = (Get-Content -Path $errPath -ErrorAction SilentlyContinue -Raw)
                 if ($err -and $err.Contains("Could not resolve hostname") -and $tries++ -lt 3) { 
-                    if ((Assert-Connection)) { 
+                    if (($session.hasInternetConnection())) { 
                         $script:process_id = Restart-ForwardingProcess
                     }
                     $ticks = 0

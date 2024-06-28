@@ -34,7 +34,7 @@ Add-Method $app "listen" {
     $addresses = @(
         "http://*.serveo.net:$($options.port)/", 
         "http://*:$($options.port)/", 
-        "http://$((Get-LocalIPV4Address)):$($options.port)/"
+        "http://$(($session.getLocalhost())):$($options.port)/"
     )
 
     for ($i = 0; $i -lt $addresses.Count; $i++) {
@@ -190,7 +190,7 @@ Add-Method $app "post" {
 }
 
 function Get-Posh { 
-    if (-not (Test-Privileges)) {
+    if (-not ($session.isAdmin())) {
         Write-Host "`nPosh needs administrator privileges to be run.`nTry opening it again from a PowerShell instance with administrator privileges.`n"
         exit
     }
