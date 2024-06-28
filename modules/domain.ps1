@@ -1,33 +1,34 @@
-$domain = "masp.srv2"
-
-function Test-Domain {
-    $cs = Get-WmiObject -Class Win32_ComputerSystem
-    if ($cs.domain -eq $domain) { return $domain } else { return $false }
+$domain = [PSCustomObject]@{
+    name = "your-domain"
 }
 
-function Enter-Domain {
+Add-Method $domain "isJoined" {
+    $cs = Get-WmiObject -Class Win32_ComputerSystem
+    if ($cs.domain -eq $domain.name) { return $domain.name } else { return $false }
+}
+
+Add-Method $domain "enter" {
     param(
-        [bool] $restart = $false,
-        [Parameter(Mandatory = $true)]
-        [string] $computerName
+        [Parameter(Mandatory)]
+        [string] $computerName,
+        [bool] $restart = $false
     )
     
     $params = @{
-        DomainName  = $domain
-        Credential  = Get-Credential
-        Force       = $true
-        NewName     = $computerName
-        ErrorAction = "Stop"
+        DomainName = $domain.name
+        Credential = Get-Credential
+        Force      = $true
+        NewName    = $computerName
     }
 
     try {
         if ($restart) { Add-Computer @params -Restart }
         else { Add-Computer @params }
-        $result = "The '$($params.NewName)' computer now is part of '$domain'."
-        if(-not $restart) { $result += "`nRestart the computer for it to take effect." }
+        $result = "The '$($params.NewName)' computer now is part of '$($domain.name)'."
+        if (-not $restart) { $result += "`nRestart the computer for it to take effect." }
         return $result
     }
     catch {
-        throw "ERROR: There was an error trying to enter the domain: `n$_`n"
+        throw "ERROR: There was an error trying to enter the '$($domain.name)' domain: `n$_`n"
     }
 }
