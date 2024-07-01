@@ -2,7 +2,7 @@ $domain = [PSCustomObject]@{
     name = "your-domain"
 }
 
-Add-Method $domain "isJoined" {
+Add-Method $domain "joined" {
     $cs = Get-WmiObject -Class Win32_ComputerSystem
     if ($cs.domain -eq $domain.name) { return $domain.name } else { return $false }
 }

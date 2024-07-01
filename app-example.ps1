@@ -3,7 +3,7 @@ $app.get('/ping', { return "Connected" })
 $app.get('/system-info', {
         $data = @{
             name               = $env:COMPUTERNAME
-            domain             = (Test-Domain)
+            domain             = ($domain.joined())
             has_admin          = (Test-Admin)
             installed_printers = (Get-InstalledPrinters)
             available_printers = (Get-AvailablePrinters)
@@ -26,7 +26,7 @@ $app.post('/enter-domain', {
     param(
         [object] $data
     )
-    return (Enter-Domain -ComputerName $data.computer_name)
+    return ($domain.enter($data.computer_name))
 })
 
 $app.post('/add-printers', {
