@@ -5,8 +5,8 @@ $app.get('/system-info', {
             name               = $env:COMPUTERNAME
             domain             = ($domain.joined())
             has_admin          = ($accounts.isAdminActivated())
-            installed_printers = (Get-InstalledPrinters)
-            available_printers = (Get-AvailablePrinters)
+            installed_printers = ($printers.getInstalled())
+            available_printers = ($printers.getAvailable())
         }
 
         return $data
