@@ -4,7 +4,7 @@ $app.get('/system-info', {
         $data = @{
             name               = $env:COMPUTERNAME
             domain             = ($domain.joined())
-            has_admin          = (Test-Admin)
+            has_admin          = ($accounts.isAdminActivated())
             installed_printers = (Get-InstalledPrinters)
             available_printers = (Get-AvailablePrinters)
         }
@@ -12,10 +12,14 @@ $app.get('/system-info', {
         return $data
     })
 
-$app.post('/activate-admin', {
+$app.get('/activate-admin', {
         try {
-            Set-Admin
-            return "Administrator account was activated successfully with the following credentials:`nUsername: $($adminModule.username)`nPassword: $($adminModule.password)`n" 
+            if ($accounts.isAdminActivated() -eq $false) {
+                $accounts.activateAdmin()
+                $adm = $accounts.admin()
+                return "Administrator account was activated successfully with the following credentials:`nUsername: $($adm.Name)`nPassword: $($accounts.admin_password)`n" 
+            }
+            return "Administrator account is already activated."
         }
         catch {
             return "An error ocurred while trying to activate the administrator user:`n$_"

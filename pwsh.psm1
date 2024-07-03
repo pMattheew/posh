@@ -3,7 +3,7 @@
 . "$PSScriptRoot\utils\converters.ps1"
 . "$PSScriptRoot\modules\session.ps1"
 . "$PSScriptRoot\modules\expose.ps1"
-. "$PSScriptRoot\modules\admin.ps1"
+. "$PSScriptRoot\modules\accounts.ps1"
 . "$PSScriptRoot\modules\domain.ps1"
 . "$PSScriptRoot\modules\printers.ps1"
 
