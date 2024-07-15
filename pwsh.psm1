@@ -18,7 +18,7 @@ Add-Property $app "forwarding" $null
 Add-Method $app "stop" {
     Write-Host "INFO: Stopping application..."
     if ($app.forwarding) {
-        Stop-Process -Id $app.forwarding.process_id
+        Stop-Process -Id $app.forwarding.id
     }
     $app.listener.stop()
 }
@@ -26,7 +26,7 @@ Add-Method $app "stop" {
 Add-Method $app "listen" {
     param(
         [hashtable] $options = @{
-            port = 4000
+            port = $expose.port
             expose = $false
         }
     )
@@ -46,7 +46,7 @@ Add-Method $app "listen" {
     Write-Host "INFO: Listening on port $($options.port)..."
 
     if($options.expose) {
-        $app.forwarding = Start-Forwarding -Port $options.port
+        $app.forwarding = $expose.init()
     }
     
     try {

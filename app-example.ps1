@@ -47,4 +47,7 @@ $app.post('/add-printers', {
     return $result
 })
 
-$app.listen()
+$app.listen(@{
+    port = 4000
+    expose = $true
+})
