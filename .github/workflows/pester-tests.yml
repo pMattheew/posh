@@ -1,0 +1,25 @@
+name: Run Pester Tests
+
+on: [push]
+
+jobs:
+  test:
+    name: Run Pester Tests
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      # - name: Set up PowerShell
+      #   uses: actions/setup-powershell@v2
+      #   with:
+      #     pwsh-version: '7.x' # Ensure compatibility with latest Pester version
+      
+      # - name: Install Pester
+      #   run: |
+      #     Set-PSRepository PSGallery -InstallationPolicy Trusted
+      #     Install-Module -Name Pester -Force -Confirm:$false
+      
+      - name: Run Pester Tests
+        run: Invoke-Pester -Path .\tests -Output Detailed
+        shell: pwsh
