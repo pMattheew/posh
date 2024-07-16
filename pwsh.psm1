@@ -189,12 +189,12 @@ Add-Method $app "post" {
     $app.request('POST', $path, $callback)
 }
 
-function Get-Posh { 
+function Get-Pwsh { 
     if (-not ($session.isAdmin())) {
-        Write-Host "`nPosh needs administrator privileges to be run.`nTry opening it again from a PowerShell instance with administrator privileges.`n"
+        Write-Host "`n$env:APP_NAME needs administrator privileges to be run.`nTry opening it again from a PowerShell instance with administrator privileges.`n"
         exit
     }
     $app 
 }
 
-Export-ModuleMember -Function Get-Posh
+Export-ModuleMember -Function Get-Pwsh
