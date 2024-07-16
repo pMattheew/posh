@@ -1,62 +1,75 @@
-$logPath = "$env:ROOT\serveo_logs.log"
-$errPath = "$env:ROOT\serveo_error.log"
-$port = $null
-$process_id = $null
-
-function Start-ForwardingProcess {
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-WindowStyle Hidden -Command `" ssh -o StrictHostKeyChecking=no -R 80:localhost:$port serveo.net 1> $($logPath) 2>$($errPath) `"" -PassThru | Select-Object -ExpandProperty Id
+$expose = [PSCustomObject]@{
+    port             = 4000
+    process          = [PSCustomObject]@{
+        id    = $null
+        token = $null
+        url   = $null
+    }
+    output           = @{
+        std = "$env:ROOT\serveo_logs.log"
+        err = "$env:ROOT\serveo_error.log"
+    }
+    SERVEO_URL_REGEX = "https:\/\/([a-f0-9]+)\.serveo\.net"
 }
 
-function Restart-ForwardingProcess {
-    Stop-Process -Id $process_id
-    Start-ForwardingProcess
+Add-Method $expose.process "start" {
+    return Start-Process -FilePath "powershell.exe" `
+        -ArgumentList "-WindowStyle Hidden -Command `"ssh -o StrictHostKeyChecking=no -R 80:localhost:$($expose.port) serveo.net 1> $($expose.output.std) 2>$($expose.output.err) `"" `
+        -PassThru | Select-Object -ExpandProperty Id
 }
 
-function Start-Forwarding {
+Add-Method $expose.process "restart" {
+    Stop-Process -Id $expose.process.id
+    return $expose.process.start()    
+}
+
+Add-Method $expose.process "matchToken" {
+    do {            
+        if ($ticks++ -gt 20) {
+            $err = (Get-Content -Path $expose.output.err -ErrorAction SilentlyContinue -Raw)
+            if ($err -and $err.Contains("Could not resolve hostname") -and $tries++ -lt 3) { 
+                if (($session.hasInternetConnection())) { 
+                    $expose.process.id = $expose.process.restart()
+                }
+                $ticks = 0
+            }
+        }
+
+        Start-Sleep -Milliseconds 250
+        $hasToken = (Get-Content -Path $expose.output.std -ErrorAction SilentlyContinue) -match $expose.SERVEO_URL_REGEX
+    } while (-not $hasToken)
+    return $matches
+}
+
+Add-Method $expose "init" {
     param(
-        [Parameter(Mandatory = $true)]
-        [int] $port 
+        [int] $port = $expose.port
     )
 
     Write-Host "INFO: Exposing server to internet..."
-    
-    $script:port = $port
 
-    if (Test-Path $logPath) { Remove-Item $logPath -Force }
+    if (Test-Path $expose.output.std) { Remove-Item $expose.output.std -Force }
+    if (Test-Path $expose.output.err) { Remove-Item $expose.output.err -Force }
     
     try {
-        $script:process_id = Start-ForwardingProcess
+        $expose.process.id = $expose.process.start()
 
-        do {            
-            if ($ticks++ -gt 20) {
-                $err = (Get-Content -Path $errPath -ErrorAction SilentlyContinue -Raw)
-                if ($err -and $err.Contains("Could not resolve hostname") -and $tries++ -lt 3) { 
-                    if ((Assert-Connection)) { 
-                        $script:process_id = Restart-ForwardingProcess
-                    }
-                    $ticks = 0
-                }
-            }
+        $match = $expose.process.matchToken()
 
-            Start-Sleep -Milliseconds 250
-            $hasToken = (Get-Content -Path $logPath -ErrorAction SilentlyContinue) -match "https:\/\/([a-f0-9]+)\.serveo\.net" 
-        } while (-not $hasToken)
+        $expose.process.url = $match[0]
+        $expose.process.token = $match[1]
 
-        Write-Host "INFO: Server successfully exposed to internet.`nINFO: Available in $($matches[0])"
+        Write-Host "INFO: Server successfully exposed to internet.`nINFO: Available in $($expose.process.url)"
     
-        return @{
-            process_id = $process_id
-            token      = $matches[1]
-            url        = $matches[0]
-        }
+        return $expose.process
     }
     catch {
-        Write-Warning ""
+        Write-Warning $_
         Write-Warning "There was an error while trying to expose your local server to the internet."
         Write-Warning "Try again in a few seconds..."
         Write-Warning "For more details, check the logs in:"
-        Write-Warning $logPath
-        Write-Warning $errPath
+        Write-Warning $expose.output.std
+        Write-Warning $expose.output.err
         return $null
     }
 }

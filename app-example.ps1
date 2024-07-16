@@ -3,19 +3,23 @@ $app.get('/ping', { return "Connected" })
 $app.get('/system-info', {
         $data = @{
             name               = $env:COMPUTERNAME
-            domain             = (Test-Domain)
-            has_admin          = (Test-Admin)
-            installed_printers = (Get-InstalledPrinters)
-            available_printers = (Get-AvailablePrinters)
+            domain             = ($domain.joined())
+            has_admin          = ($accounts.isAdminActivated())
+            installed_printers = ($printers.getInstalled())
+            available_printers = ($printers.getAvailable())
         }
 
         return $data
     })
 
-$app.post('/activate-admin', {
+$app.get('/activate-admin', {
         try {
-            Set-Admin
-            return "Administrator account was activated successfully with the following credentials:`nUsername: $($adminModule.username)`nPassword: $($adminModule.password)`n" 
+            if ($accounts.isAdminActivated() -eq $false) {
+                $accounts.activateAdmin()
+                $adm = $accounts.admin()
+                return "Administrator account was activated successfully with the following credentials:`nUsername: $($adm.Name)`nPassword: $($accounts.admin_password)`n" 
+            }
+            return "Administrator account is already activated."
         }
         catch {
             return "An error ocurred while trying to activate the administrator user:`n$_"
@@ -26,7 +30,7 @@ $app.post('/enter-domain', {
     param(
         [object] $data
     )
-    return (Enter-Domain -ComputerName $data.computer_name)
+    return ($domain.enter($data.computer_name))
 })
 
 $app.post('/add-printers', {
@@ -43,4 +47,7 @@ $app.post('/add-printers', {
     return $result
 })
 
-$app.listen()
+$app.listen(@{
+    port = 4000
+    expose = $true
+})

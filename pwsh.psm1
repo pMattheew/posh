@@ -3,7 +3,7 @@
 . "$PSScriptRoot\utils\converters.ps1"
 . "$PSScriptRoot\modules\session.ps1"
 . "$PSScriptRoot\modules\expose.ps1"
-. "$PSScriptRoot\modules\admin.ps1"
+. "$PSScriptRoot\modules\accounts.ps1"
 . "$PSScriptRoot\modules\domain.ps1"
 . "$PSScriptRoot\modules\printers.ps1"
 
@@ -18,7 +18,7 @@ Add-Property $app "forwarding" $null
 Add-Method $app "stop" {
     Write-Host "INFO: Stopping application..."
     if ($app.forwarding) {
-        Stop-Process -Id $app.forwarding.process_id
+        Stop-Process -Id $app.forwarding.id
     }
     $app.listener.stop()
 }
@@ -26,7 +26,7 @@ Add-Method $app "stop" {
 Add-Method $app "listen" {
     param(
         [hashtable] $options = @{
-            port = 4000
+            port = $expose.port
             expose = $false
         }
     )
@@ -34,7 +34,7 @@ Add-Method $app "listen" {
     $addresses = @(
         "http://*.serveo.net:$($options.port)/", 
         "http://*:$($options.port)/", 
-        "http://$((Get-LocalIPV4Address)):$($options.port)/"
+        "http://$(($session.getLocalhost())):$($options.port)/"
     )
 
     for ($i = 0; $i -lt $addresses.Count; $i++) {
@@ -46,7 +46,7 @@ Add-Method $app "listen" {
     Write-Host "INFO: Listening on port $($options.port)..."
 
     if($options.expose) {
-        $app.forwarding = Start-Forwarding -Port $options.port
+        $app.forwarding = $expose.init()
     }
     
     try {
@@ -190,7 +190,7 @@ Add-Method $app "post" {
 }
 
 function Get-Posh { 
-    if (-not (Test-Privileges)) {
+    if (-not ($session.isAdmin())) {
         Write-Host "`nPosh needs administrator privileges to be run.`nTry opening it again from a PowerShell instance with administrator privileges.`n"
         exit
     }
