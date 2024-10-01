@@ -1,13 +1,11 @@
-$accounts = [PSCustomObject]@{
-    admin_password = "your-wonderful-password"
-}
+$accounts = [PSCustomObject]@{}
 
 Add-Method $accounts "admin" { Get-LocalUser | Where-Object { $_.SID -like '*-500' } }
 
 Add-Method $accounts "isAdminActivated" { $accounts.admin().Enabled }
 
 Add-Method $accounts "hash" { 
-    param([string] $pswd = $accounts.admin_password)
+    param([string] $pswd = $app.config.admin_password)
     ConvertTo-SecureString -String $pswd -AsPlainText -Force 
 }
 

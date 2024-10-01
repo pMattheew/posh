@@ -6,7 +6,7 @@ BeforeAll {
 Describe "Domain" {
     It "should return if it is joined" {
         $result = $domain.joined()
-        $result -eq $false -or $result -eq $domain.name |
+        $result -eq $false -or $result -eq $app.config.domain_name |
         Should -BeTrue
     }
 
@@ -44,7 +44,7 @@ Describe "Domain" {
                 throw "Simulated Add-Computer error"
             }
             
-            { $domain.enter($computerName, $false) } | Should -Throw "*ERROR: There was an error trying to enter the '$($domain.name)' domain:*"
+            { $domain.enter($computerName, $false) } | Should -Throw "*ERROR: There was an error trying to enter the '$($app.config.domain_name)' domain:*"
         }
     }
 }

@@ -6,6 +6,12 @@ BeforeAll {
     . "$PSScriptRoot\..\utils\object-helper.ps1"
     . "$PSScriptRoot\..\modules\accounts.ps1"
 
+    $global:app = @{
+        config = @{
+            admin_password = "test_password"
+        }
+    }
+
 }
 
 Describe "Accounts" {
@@ -16,11 +22,9 @@ Describe "Accounts" {
     }
 
     It "should hash and unhash passwords" {
-        $accounts.admin_password = "test_password"
-
         $hash = $accounts.hash()
 
-        $accounts.revertHash($hash) | Should -Be $accounts.admin_password
+        $accounts.revertHash($hash) | Should -Be $app.config.admin_password
         
         $pswd = "test_password_2"
 
