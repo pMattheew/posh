@@ -1,0 +1,17 @@
+name: Version Bump on Push to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  version-bump:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Bump version
+        run: ./ci/publish-module.ps1
+        shell: pwsh

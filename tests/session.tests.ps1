@@ -3,6 +3,8 @@ Describe "Session" {
     BeforeAll {
         . "$PSScriptRoot\..\utils\object-helper.ps1"
         . "$PSScriptRoot\..\modules\session.ps1"
+
+        Mock Test-Connection { }
     }
 
     It "Should return local IPV4 address" {
