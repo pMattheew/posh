@@ -1,4 +1,26 @@
-. "$PSScriptRoot\init.ps1"
+$env:APP_NAME = "Pwsh"
+$env:ROOT = "$(($env:PSModulePath -Split ';')[0])\$env:APP_NAME"
+
+if (-not (Test-Path $env:ROOT)) {
+    New-Item -Path $env:ROOT -ItemType Directory > $null
+}
+
+$app = [PSCustomObject]@{}
+
+Add-Property $app "config" @{
+    # Password to be used with Windows' default Administrator account
+    admin_password = "y0ur-wond3rful-p@ssword"
+
+    # Name of an Active Directory domain
+    domain_name    = "your-domain"
+
+    # IP address of a printer server
+    printer_server = "your.printer.server"
+
+    # Default application port
+    port           = 4000
+}
+
 . "$PSScriptRoot\utils\object-helper.ps1"
 . "$PSScriptRoot\utils\converters.ps1"
 . "$PSScriptRoot\modules\session.ps1"
@@ -7,7 +29,6 @@
 . "$PSScriptRoot\modules\domain.ps1"
 . "$PSScriptRoot\modules\printers.ps1"
 
-$app = [PSCustomObject]@{}
 
 Add-Property $app "listener" (New-Object System.Net.HttpListener)
 
@@ -26,15 +47,14 @@ Add-Method $app "stop" {
 Add-Method $app "listen" {
     param(
         [hashtable] $options = @{
-            port = $expose.port
             expose = $false
         }
     )
 
     $addresses = @(
-        "http://*.serveo.net:$($options.port)/", 
-        "http://*:$($options.port)/", 
-        "http://$(($session.getLocalhost())):$($options.port)/"
+        "http://*.serveo.net:$($app.config.port)/", 
+        "http://*:$($app.config.port)/", 
+        "http://$(($session.getLocalhost())):$($app.config.port)/"
     )
 
     for ($i = 0; $i -lt $addresses.Count; $i++) {
@@ -43,7 +63,7 @@ Add-Method $app "listen" {
     
     $app.listener.Start()
 
-    Write-Host "INFO: Listening on port $($options.port)..."
+    Write-Host "INFO: Listening on port $($app.config.port)..."
 
     if($options.expose) {
         $app.forwarding = $expose.init()
@@ -197,4 +217,13 @@ function Get-Pwsh {
     $app 
 }
 
+function Set-PwshConfig {
+    param(
+        [hashtable] $c
+    )
+    $app.config = $c
+    return $true
+}
+
 Export-ModuleMember -Function Get-Pwsh
+Export-ModuleMember -Function Set-PwshConfig

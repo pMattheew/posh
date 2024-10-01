@@ -1,13 +1,11 @@
-$printers = [PSCustomObject]@{
-    server = "your-printer-server"
-}
+$printers = [PSCustomObject]@{}
 
 Add-Method $printers "add" {
     param(
         [Parameter(Mandatory)]
         [string] $printer
     )
-    Add-Printer -ConnectionName "\\$($printers.server)\$printer" -ErrorAction Stop
+    Add-Printer -ConnectionName "\\$($app.config.printer_server)\$printer" -ErrorAction Stop
 }
 
 Add-Method $printers "format" {
@@ -26,14 +24,14 @@ Add-Method $printers "getInstalled" {
 }
 
 Add-Method $printers "getAvailable" {
-    if ($printers.server) {
-        $remote = Get-Printer -ComputerName $printers.server | ForEach-Object { $_.Name }
+    if ($app.config.printer_server) {
+        $remote = Get-Printer -ComputerName $app.config.printer_server | ForEach-Object { $_.Name }
     }
     else {
         $remote = @()
     }
     $local = Get-Printer | ForEach-Object { $_.Name }
-    $available = $remote | Where-Object { $local -notcontains "\\$($printers.server)\$_" }
+    $available = $remote | Where-Object { $local -notcontains "\\$($app.config.printer_server)\$_" }
     if ($null -eq $available) {
         return $null
     }

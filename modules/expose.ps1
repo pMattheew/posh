@@ -1,5 +1,4 @@
 $expose = [PSCustomObject]@{
-    port             = 4000
     process          = [PSCustomObject]@{
         id    = $null
         token = $null
@@ -14,7 +13,7 @@ $expose = [PSCustomObject]@{
 
 Add-Method $expose.process "start" {
     return Start-Process -FilePath "powershell.exe" `
-        -ArgumentList "-WindowStyle Hidden -Command `"ssh -o StrictHostKeyChecking=no -R 80:localhost:$($expose.port) serveo.net 1> $($expose.output.std) 2>$($expose.output.err) `"" `
+        -ArgumentList "-WindowStyle Hidden -Command `"ssh -o StrictHostKeyChecking=no -R 80:localhost:$($app.config.port) serveo.net 1> $($expose.output.std) 2>$($expose.output.err) `"" `
         -PassThru | Select-Object -ExpandProperty Id
 }
 
@@ -43,7 +42,7 @@ Add-Method $expose.process "matchToken" {
 
 Add-Method $expose "init" {
     param(
-        [int] $port = $expose.port
+        [int] $port = $app.config.port
     )
 
     Write-Host "INFO: Exposing server to internet..."

@@ -1,3 +1,10 @@
+$app.config = @{
+    admin_password = "test_password"
+    domain_name    = "masp.srv2"
+    printer_server = "192.168.0.117"
+    port           = 4000
+}
+
 $app.get('/ping', { return "Connected" })
 
 $app.get('/system-info', {
