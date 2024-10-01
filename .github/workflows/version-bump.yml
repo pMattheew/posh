@@ -12,4 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-        
+      - name: Bump version
+        run: ./ci/publish-module.ps1
+        shell: pwsh
