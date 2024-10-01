@@ -1,4 +1,4 @@
-$manifestPath = ".\..\pwsh.psd1"
+$manifestPath = ".\pwsh.psd1"
 $commitRegex = '^(?<type>\w+)(\((?<scope>[^\)]+)\))?(?<bc>!)?:\s+(?<description>.+)$'
 $commit = [string](git log -1 --pretty=%B)
 
