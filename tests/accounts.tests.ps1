@@ -16,6 +16,8 @@ Describe "Accounts" {
     }
 
     It "should hash and unhash passwords" {
+        $app.config.admin_password = "test_password"
+
         $hash = $accounts.hash()
 
         $accounts.revertHash($hash) | Should -Be $accounts.admin_password
