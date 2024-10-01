@@ -5,20 +5,12 @@ if (-not (Test-Path $env:ROOT)) {
     New-Item -Path $env:ROOT -ItemType Directory > $null
 }
 
-$app = [PSCustomObject]@{}
-
-Add-Property $app "config" @{
-    # Password to be used with Windows' default Administrator account
-    admin_password = "y0ur-wond3rful-p@ssword"
-
-    # Name of an Active Directory domain
-    domain_name    = "your-domain"
-
-    # IP address of a printer server
-    printer_server = "your.printer.server"
-
-    # Default application port
-    port           = 4000
+$app = [PSCustomObject]@{
+    config = @{
+        admin_password = "y0ur-wond3rful-p@ssword" # Password to be used with Windows' default Administrator account
+        domain_name    = "your-domain" # Name of an Active Directory domain
+        printer_server = "your.printer.server" # IP address of a printer server
+    }
 }
 
 . "$PSScriptRoot\utils\object-helper.ps1"
@@ -47,14 +39,15 @@ Add-Method $app "stop" {
 Add-Method $app "listen" {
     param(
         [hashtable] $options = @{
+            port   = $expose.port
             expose = $false
         }
     )
 
     $addresses = @(
-        "http://*.serveo.net:$($app.config.port)/", 
-        "http://*:$($app.config.port)/", 
-        "http://$(($session.getLocalhost())):$($app.config.port)/"
+        "http://*.serveo.net:$($options.port)/", 
+        "http://*:$($options.port)/", 
+        "http://$(($session.getLocalhost())):$($options.port)/"
     )
 
     for ($i = 0; $i -lt $addresses.Count; $i++) {
@@ -63,9 +56,10 @@ Add-Method $app "listen" {
     
     $app.listener.Start()
 
-    Write-Host "INFO: Listening on port $($app.config.port)..."
+    Write-Host "INFO: Listening on port $($options.port)..."
 
-    if($options.expose) {
+    if ($options.expose) {
+        $expose.port = $options.port
         $app.forwarding = $expose.init()
     }
     

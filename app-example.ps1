@@ -2,7 +2,6 @@ $app.config = @{
     admin_password = "test_password"
     domain_name    = "masp.srv2"
     printer_server = "192.168.0.117"
-    port           = 4000
 }
 
 $app.get('/ping', { return "Connected" })
@@ -34,27 +33,27 @@ $app.get('/activate-admin', {
     })
 
 $app.post('/enter-domain', {
-    param(
-        [object] $data
-    )
-    return ($domain.enter($data.computer_name))
-})
+        param(
+            [object] $data
+        )
+        return ($domain.enter($data.computer_name))
+    })
 
 $app.post('/add-printers', {
-    param(
-        [object] $data
-    )
-    foreach($p in $data.printers) {
-        try {
-            $printers.add($p)
-            $result += "`n'$p' added successfully."
+        param(
+            [object] $data
+        )
+        foreach ($p in $data.printers) {
+            try {
+                $printers.add($p)
+                $result += "`n'$p' added successfully."
+            }
+            catch { $result += "`nThere was an error trying to add '$p':`n$_" }
         }
-        catch { $result += "`nThere was an error trying to add '$p':`n$_" }
-    }
-    return $result
-})
+        return $result
+    })
 
 $app.listen(@{
-    port = 4000
-    expose = $true
-})
+        port   = 4000
+        expose = $true
+    })
