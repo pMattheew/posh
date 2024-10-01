@@ -39,7 +39,7 @@ $app.post('/add-printers', {
     )
     foreach($p in $data.printers) {
         try {
-            Add-Printer -ConnectionName "\\your-printer-server\$p" -ErrorAction Stop
+            $printers.add($p)
             $result += "`n'$p' added successfully."
         }
         catch { $result += "`nThere was an error trying to add '$p':`n$_" }

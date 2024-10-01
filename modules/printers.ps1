@@ -2,6 +2,14 @@ $printers = [PSCustomObject]@{
     server = "your-printer-server"
 }
 
+Add-Method $printers "add" {
+    param(
+        [Parameter(Mandatory)]
+        [string] $printer
+    )
+    Add-Printer -ConnectionName "\\$($printers.server)\$printer" -ErrorAction Stop
+}
+
 Add-Method $printers "format" {
     param(
         [Parameter(Mandatory)]
