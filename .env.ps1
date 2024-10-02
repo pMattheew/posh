@@ -18,5 +18,5 @@ if (Test-Path $envFilePath) {
     }
 }
 else {
-    Write-Error "The .env file does not exist." -ForegroundColor Red
+    Write-Error "The .env file does not exist."
 }
