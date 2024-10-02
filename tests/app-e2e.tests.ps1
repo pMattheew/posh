@@ -1,3 +1,7 @@
+BeforeAll {
+    "$PSScriptRoot\..\tasks.ps1" | Invoke-Expression
+}
+
 Describe "App" {
     It "should initialize" {
         "$PSScriptRoot\..\bootstrap.ps1" | Invoke-Expression 
