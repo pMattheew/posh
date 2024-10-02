@@ -56,6 +56,8 @@ Add-Method $app "listen" {
             $script:req = $context.Request
             $script:res = $context.Response
             $script:payload = $null
+
+            Write-Host "REQUEST: [$($req.HttpMethod)] $($req.RawUrl)" -NoNewline
     
             $app.getPayload()
     
@@ -66,6 +68,8 @@ Add-Method $app "listen" {
             $app.handleCORSRequests()
     
             $app.returnNotFound()
+
+            Write-Host " $($res.StatusCode)"
         }
     }
     finally {
