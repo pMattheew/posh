@@ -1,5 +1,5 @@
 $expose = [PSCustomObject]@{
-    port = 4000
+    port = 1100
     process          = [PSCustomObject]@{
         id    = $null
         token = $null
