@@ -1,10 +1,10 @@
 Describe ".env.ps1" {
     BeforeAll {
-        $envFilePath = "$PSScriptRoot\..\.env"
-        . "$PSScriptRoot\..\.env.ps1"
+        . "$PSScriptRoot\..\.env.ps1" -Path ".env.example"
     }
 
     It "should populate `$env with .env file" {
+        $envFilePath = "$PSScriptRoot\..\.env.example"
         Get-Content $envFilePath | ForEach-Object {
             $parts = $_ -split '='
             if ($parts.Length -eq 2) {

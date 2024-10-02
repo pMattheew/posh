@@ -1,3 +1,7 @@
+param(
+    [string] $path = ".env"
+)
+
 $env:APP_NAME = "Pwsh"
 $env:ROOT = "$(($env:PSModulePath -Split ';')[0])\$env:APP_NAME"
 
@@ -5,9 +9,8 @@ if (-not (Test-Path $env:ROOT)) {
     New-Item -Path $env:ROOT -ItemType Directory > $null
 }
 
-$envFilePath = ".env"
-if (Test-Path $envFilePath) {
-    Get-Content $envFilePath | ForEach-Object {
+if (Test-Path $path) {
+    Get-Content $path | ForEach-Object {
 
         $parts = $_ -split '='
         if ($parts.Length -eq 2) {
