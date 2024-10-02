@@ -2,7 +2,7 @@ $domain = [PSCustomObject]@{}
 
 Add-Method $domain "joined" {
     $cs = Get-WmiObject -Class Win32_ComputerSystem
-    if ($cs.domain -eq $app.config.domain_name) { return $app.config.domain_name } else { return $false }
+    if ($cs.domain -eq $env:DOMAIN_NAME) { return $env:DOMAIN_NAME } else { return $false }
 }
 
 Add-Method $domain "enter" {
@@ -13,7 +13,7 @@ Add-Method $domain "enter" {
     )
     
     $params = @{
-        DomainName = $app.config.domain_name
+        DomainName = $env:DOMAIN_NAME
         Credential = Get-Credential
         Force      = $true
         NewName    = $computerName
@@ -22,11 +22,11 @@ Add-Method $domain "enter" {
     try {
         if ($restart) { Add-Computer @params -Restart }
         else { Add-Computer @params }
-        $result = "The '$($params.NewName)' computer now is part of '$($app.config.domain_name)'."
+        $result = "The '$($params.NewName)' computer now is part of '$($env:DOMAIN_NAME)'."
         if (-not $restart) { $result += "`nRestart the computer for it to take effect." }
         return $result
     }
     catch {
-        throw "ERROR: There was an error trying to enter the '$($app.config.domain_name)' domain: `n$_`n"
+        throw "ERROR: There was an error trying to enter the '$($env:DOMAIN_NAME)' domain: `n$_`n"
     }
 }

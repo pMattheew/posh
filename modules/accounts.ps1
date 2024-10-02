@@ -5,7 +5,7 @@ Add-Method $accounts "admin" { Get-LocalUser | Where-Object { $_.SID -like '*-50
 Add-Method $accounts "isAdminActivated" { $accounts.admin().Enabled }
 
 Add-Method $accounts "hash" { 
-    param([string] $pswd = $app.config.admin_password)
+    param([string] $pswd = $env:ADMIN_PASSWORD)
     ConvertTo-SecureString -String $pswd -AsPlainText -Force 
 }
 

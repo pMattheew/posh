@@ -5,7 +5,7 @@ Add-Method $printers "add" {
         [Parameter(Mandatory)]
         [string] $printer
     )
-    Add-Printer -ConnectionName "\\$($app.config.printer_server)\$printer" -ErrorAction Stop
+    Add-Printer -ConnectionName "\\$($env:PRINTER_SERVER)\$printer" -ErrorAction Stop
 }
 
 Add-Method $printers "format" {
@@ -24,14 +24,14 @@ Add-Method $printers "getInstalled" {
 }
 
 Add-Method $printers "getAvailable" {
-    if ($app.config.printer_server) {
-        $remote = Get-Printer -ComputerName $app.config.printer_server | ForEach-Object { $_.Name }
+    if ($env:PRINTER_SERVER) {
+        $remote = Get-Printer -ComputerName $env:PRINTER_SERVER | ForEach-Object { $_.Name }
     }
     else {
         $remote = @()
     }
     $local = Get-Printer | ForEach-Object { $_.Name }
-    $available = $remote | Where-Object { $local -notcontains "\\$($app.config.printer_server)\$_" }
+    $available = $remote | Where-Object { $local -notcontains "\\$($env:PRINTER_SERVER)\$_" }
     if ($null -eq $available) {
         return $null
     }

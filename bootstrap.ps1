@@ -1,18 +1,4 @@
-$env:APP_NAME = "Pwsh"
-$env:ROOT = "$(($env:PSModulePath -Split ';')[0])\$env:APP_NAME"
-
-if (-not (Test-Path $env:ROOT)) {
-    New-Item -Path $env:ROOT -ItemType Directory > $null
-}
-
-$app = [PSCustomObject]@{
-    config = @{
-        admin_password = "y0ur-wond3rful-p@ssword" # Password to be used with Windows' default Administrator account
-        domain_name    = "your-domain" # Name of an Active Directory domain
-        printer_server = "your.printer.server" # IP address of a printer server
-    }
-}
-
+. "$PSScriptRoot\.env.ps1"
 . "$PSScriptRoot\utils\object-helper.ps1"
 . "$PSScriptRoot\utils\converters.ps1"
 . "$PSScriptRoot\modules\session.ps1"
@@ -21,6 +7,7 @@ $app = [PSCustomObject]@{
 . "$PSScriptRoot\modules\domain.ps1"
 . "$PSScriptRoot\modules\printers.ps1"
 
+$app = [PSCustomObject]@{}
 
 Add-Property $app "listener" (New-Object System.Net.HttpListener)
 
