@@ -38,6 +38,7 @@ function Set-ManifestVersion {
     $content = Get-Content -Path $manifestPath -Encoding utf8
     $newContent = $content -replace "(?<=ModuleVersion\s*=\s*\').*?(?=\'\s*)", "$newVersion"
     Set-Content -Path $manifestPath -Value $newContent -Encoding utf8
+    return $newVersion
 }
 
 function Publish-ModuleVersion {
@@ -51,4 +52,4 @@ function Publish-ModuleVersion {
     Set-ManifestVersion $versionParts
 }
 
-Publish-ModuleVersion
+Set-Item -Path "env:NEW_VERSION" -Value (Publish-ModuleVersion)

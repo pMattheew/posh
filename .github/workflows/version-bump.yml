@@ -1,17 +1,44 @@
 name: Version Bump on Push to Main
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - "*.psd1"
 
 jobs:
-  version-bump:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    version-bump:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Bump version
-        run: ./ci/publish-module.ps1
-        shell: pwsh
+            - name: Configure Git user
+              run: |
+                  git config user.name "GitHub Actions"
+                  git config user.email "actions@github.com"
+              shell: pwsh
+
+            - name: Bump version
+              run: .\ci\publish-module.ps1
+              shell: pwsh
+
+              # Check if key is valid yet - expires every 3 months.
+            - name: Publish to PowerShell Gallery
+              run: |
+                  Publish-PSResource -Path .\pwsh.psd1 -ApiKey ${{ secrets.PSGALLERY_API_KEY }}
+              shell: pwsh
+
+            - name: Commit version bump
+              run: |
+                  git add ./*.psd1
+                  git commit -m "chore: bump version to $env:NEW_VERSION"
+              shell: pwsh
+
+            - name: Push changes
+              run: |
+                  git push origin main
+              shell: pwsh
