@@ -11,5 +11,5 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Run Pester Tests
-        run: .\tasks.ps1 test
+        run: .\tasks.ps1 test:e2e
         shell: pwsh
