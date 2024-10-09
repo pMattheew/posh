@@ -1,19 +1,22 @@
 . "$PSScriptRoot\.env.ps1"
 . "$PSScriptRoot\utils\object-helper.ps1"
 . "$PSScriptRoot\utils\converters.ps1"
+. "$PSScriptRoot\utils\events.ps1"
 . "$PSScriptRoot\modules\session.ps1"
 . "$PSScriptRoot\modules\expose.ps1"
 . "$PSScriptRoot\modules\accounts.ps1"
 . "$PSScriptRoot\modules\domain.ps1"
 . "$PSScriptRoot\modules\printers.ps1"
 
-$app = [PSCustomObject]@{}
+$app = [PSCustomObject]@{
+    events = @{
+        server_exposed = "server_exposed"
+    }
+}
 
 Add-Property $app "listener" (New-Object System.Net.HttpListener)
 
 Add-Property $app "handlers" (New-Object System.Collections.ArrayList)
-
-Add-Property $app "forwarding" $null
 
 Add-Method $app "stop" {
     Write-Host "INFO: Stopping application..."
@@ -47,7 +50,7 @@ Add-Method $app "listen" {
 
     if ($options.expose) {
         $expose.port = $options.port
-        $app.forwarding = $expose.init()
+        Send-Event $app.events.server_exposed $expose.init()
     }
     
     try {

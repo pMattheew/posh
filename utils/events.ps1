@@ -1,5 +1,3 @@
-$env:EVENT_SERVER_EXPOSED = "ServerExposed"
-
 function Send-Event {
     param(
         [Parameter(Mandatory = $true)]

@@ -1,4 +1,3 @@
-. "$PSScriptRoot\utils\events.ps1"
 . "$PSScriptRoot\bootstrap.ps1"
 
 function Get-Pwsh { 
