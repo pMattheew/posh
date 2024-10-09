@@ -1,3 +1,7 @@
+ipmo pwsh
+
+$app = Get-Pwsh
+
 $app.get('/ping', { return "Connected" })
 
 $app.get('/system-info', {
