@@ -48,6 +48,6 @@ $app.post('/add-printers', {
     })
 
 $app.listen(@{
-        port   = 4000
+        port   = 1100
         expose = $true
     })
