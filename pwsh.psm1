@@ -1,3 +1,4 @@
+. "$PSScriptRoot\utils\events.ps1"
 . "$PSScriptRoot\bootstrap.ps1"
 
 function Get-Pwsh { 
@@ -9,3 +10,5 @@ function Get-Pwsh {
 }
 
 Export-ModuleMember -Function Get-Pwsh
+Export-ModuleMember -Function Send-Event
+Export-ModuleMember -Function Receive-Event
