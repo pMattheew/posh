@@ -9,7 +9,7 @@
 . "$PSScriptRoot\modules\printers.ps1"
 
 $app = [PSCustomObject]@{
-    events = @{
+    events = [PSCustomObject]@{
         server_exposed = "server_exposed"
     }
 }
