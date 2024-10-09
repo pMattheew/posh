@@ -8,13 +8,4 @@ function Get-Pwsh {
     $app 
 }
 
-function Set-PwshConfig {
-    param(
-        [hashtable] $c
-    )
-    $app.config = $c
-    return $true
-}
-
 Export-ModuleMember -Function Get-Pwsh
-Export-ModuleMember -Function Set-PwshConfig
