@@ -11,7 +11,7 @@
     RootModule        = 'pwsh.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.3.3'
+    ModuleVersion     = '0.3.4'
 
     # ID used to uniquely identify this module
     GUID              = '752ab13d-dde0-42ef-bf28-2f1dfc7e1299'
