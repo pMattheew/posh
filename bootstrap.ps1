@@ -34,6 +34,13 @@ Add-Method $app "listen" {
         }
     )
 
+    $portBusy = netstat -an | Select-String ":$($options.port)"
+    if ($portBusy) {
+        Write-Warning "Port $(($options.port)) is busy."
+        while (netstat -an | Select-String ":$((++$options.port))") { $null }
+        Write-Warning "Continuing with port $($options.port)."
+    }
+    
     $addresses = @(
         "http://*.serveo.net:$($options.port)/", 
         "http://*:$($options.port)/", 
