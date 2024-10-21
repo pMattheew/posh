@@ -1,3 +1,4 @@
+$exec_time = Get-Date -Format "yyyyMMdd_HHmmss"
 $expose = [PSCustomObject]@{
     port = 1100
     process          = [PSCustomObject]@{
@@ -6,8 +7,8 @@ $expose = [PSCustomObject]@{
         url   = $null
     }
     output           = @{
-        std = "$env:ROOT\serveo_logs.log"
-        err = "$env:ROOT\serveo_error.log"
+        std = "$env:ROOT\serveo_logs-$($exec_time).log"
+        err = "$env:ROOT\serveo_error-$($exec_time).log"
     }
     SERVEO_URL_REGEX = "https:\/\/([a-f0-9]+)\.serveo\.net"
 }
